@@ -8,64 +8,89 @@ GameEngine::GameEngine(int windowWidth, int windowHeight) {
 }
 
 void GameEngine::Update() {
-	bool quitGame = false;
+    bool quitGame = false;
 
-	GameObject object(renderer);
+    // Map de escenas
+    std::map<std::string, Scene*> gameScenes;
+    gameScenes["MainMenu"] = new MenuScene();
+    gameScenes["Gameplay"] = new GameplayScene();
+    gameScenes["Highscores"] = new HighscoresScene();
 
-	//INT TIME
-	float dt = 0.0f;
-	float lastTime = (float)SDL_GetPerformanceCounter() /(float)SDL_GetPerformanceFrequency();
+    // Empezamos en gameplay (puedes cambiar a MainMenu si quieres)
+    Scene* currentScene = gameScenes["Gameplay"];
+    currentScene->Start(renderer);
 
-	const int FPS = 60;
-	const float frameTime = 1.0f/(float)FPS;
+    // Tiempo para deltaTime
+    float lastTime = (float)SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency();
+    float dt = 0.0f;
 
-	//SCENES
-	std::map<std::string, Scene*> gameScene;
+    // Frames por segundo objetivo
+    const int FPS = 60;
+    const float frameTime = 1.0f / (float)FPS;
 
-	gameScene["MainMenu"] = new MenuScene();
-	gameScene["Gameplay"] = new GameplayScene();
-	gameScene["HightScores"] = new HighscoresScene();
+    while (!quitGame) {
+        // Tiempo actual
+        float currentTime = (float)SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency();
+        dt += currentTime - lastTime;
+        lastTime = currentTime;
 
-	Scene* currentScene = gameScene["Gameplay"];
-	currentScene->Start(renderer);
+        // Procesar todos los eventos SDL
+        SDL_Event e;
+        while (SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                quitGame = true;
+            }
 
-	while (!quitGame) {
-		//DETLTA TIME CONTROL
-		float currentTime = (float)SDL_GetPerformanceCounter() / (float)SDL_GetPerformanceFrequency();
-		dt += currentTime - lastTime;
+            // Aquí podrías manejar más inputs o pasar el evento a la escena actual
+        }
 
-		if (dt > frameTime) {
-			//INPUTS
-			SDL_Event e;
+        // Si ha pasado suficiente tiempo para un frame, actualizamos y renderizamos
+        if (dt >= frameTime) {
+            // Actualizamos la escena con delta time (en segundos)
+            currentScene->Update(dt);
 
-			while (SDL_PollEvent(&e) != 0) {
-				if (e.type == SDL_QUIT) {
-					quitGame = true;
-				}
-			}
+            // Limpiar pantalla con un color de fondo (naranja en este caso)
+            SDL_SetRenderDrawColor(renderer, 255, 120, 0, 255);
+            SDL_RenderClear(renderer);
 
-			//LOGIC
-			currentScene->Update(dt);
+            // Renderizamos la escena actual
+            currentScene->Render(renderer);
 
-			//RENDER
-			SDL_SetRenderDrawColor(renderer, 255, 120, 0, 1); //Que queremos que pinte
+            // Mostrar lo que hemos dibujado
+            SDL_RenderPresent(renderer);
 
-			SDL_RenderClear(renderer);						  //Limpia lo anterior
-			currentScene->Render(renderer);
-			SDL_RenderPresent(renderer);					  //Pintamos lo nuevo
+            // Gestionar cambio de escenas
+            if (currentScene->IsFinished()) {
+                currentScene->Exit();
 
+                std::string nextSceneName = currentScene->GetTargetScene();
+                if (gameScenes.find(nextSceneName) != gameScenes.end()) {
+                    currentScene = gameScenes[nextSceneName];
+                    currentScene->Start(renderer);
+                }
+                else {
+                    // Si no hay escena siguiente, salir del juego
+                    quitGame = true;
+                }
+            }
 
-			//SCENES TRANSITION
-			if (currentScene->IsFinished()) {
-				currentScene->Exit();
-				currentScene = gameScene[currentScene->GetTargetScene()];
-				currentScene->Start(renderer);
-			}
+            // Restar el frameTime a dt para compensar el tiempo ya consumido
+            dt -= frameTime;
+        }
+        else {
+            // Si no ha pasado tiempo suficiente para el siguiente frame, dormir un poco
+            SDL_Delay(1);
+        }
+    }
 
-			dt -= frameTime;
-		}
-	}
+    // Liberar memoria de las escenas creadas
+    for (auto& pair : gameScenes) {
+        pair.second->Exit();
+        delete pair.second;
+    }
 }
+
+
 
 void GameEngine::Finish() {
 	SDL_DestroyWindow(window);

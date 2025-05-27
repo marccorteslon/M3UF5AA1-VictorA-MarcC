@@ -20,8 +20,8 @@ class GameObject {
 public:
 	GameObject(SDL_Renderer* renderer);
 
-	void Update(float dt);
-	void Render(SDL_Renderer* renderer);
+	virtual void Update(float dt);
+	virtual void Render(SDL_Renderer* renderer);
 
 
 
