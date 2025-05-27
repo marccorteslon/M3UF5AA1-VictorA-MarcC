@@ -21,7 +21,7 @@ GameObject::GameObject(SDL_Renderer* renderer) {
 }
 
 void GameObject::Update(float dt) {
-	zRotation = 10 * dt;
+	//zRotation = 10 * dt;
 }
 
 void GameObject::Render(SDL_Renderer* renderer) {
