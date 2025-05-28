@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "Player.h"
-#include "Asteroid.h"  // << añade esta línea
+#include "Asteroid.h"
 #include <vector>
 
 class GameplayScene : public Scene {
@@ -16,5 +16,5 @@ public:
 	void Exit()override;
 
 private:
-	std::vector<GameObject*> asteroids;  // Para gestionar asteroides si quieres separados
+	std::vector<GameObject*> asteroids;
 };

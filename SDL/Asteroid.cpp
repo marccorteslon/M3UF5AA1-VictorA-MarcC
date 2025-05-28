@@ -9,7 +9,6 @@ Asteroid::Asteroid(SDL_Renderer* renderer, Vector2 spawnPos, Vector2 vel)
 	scale = Vector2(1.f, 1.f);
 	zRotation = 0.f;
 
-	// Carga la textura, puedes usar la misma que el jugador o una propia
 	SDL_Surface* surf = IMG_Load("resources/asteroids_spritesheet.png");
 	if (!surf) {
 		SDL_Log("Error loading asteroid sprite: %s", SDL_GetError());
@@ -24,14 +23,12 @@ void Asteroid::Update(float dt) {
 	position.x += velocity.x * dt;
 	position.y += velocity.y * dt;
 
-	// Rebotar/envolver en pantalla 500x500
 	if (position.x < 0) position.x += 500;
 	else if (position.x > 500) position.x -= 500;
 
 	if (position.y < 0) position.y += 500;
 	else if (position.y > 500) position.y -= 500;
 
-	// Girar lentamente
 	zRotation += 30.f * dt;
 	if (zRotation >= 360.f) zRotation -= 360.f;
 }

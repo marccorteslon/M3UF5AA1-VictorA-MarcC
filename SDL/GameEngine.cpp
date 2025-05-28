@@ -40,8 +40,6 @@ void GameEngine::Update() {
             if (e.type == SDL_QUIT) {
                 quitGame = true;
             }
-
-            // Aquí podrías manejar más inputs o pasar el evento a la escena actual
         }
 
         // Si ha pasado suficiente tiempo para un frame, actualizamos y renderizamos
