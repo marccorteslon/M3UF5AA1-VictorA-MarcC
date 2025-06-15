@@ -20,23 +20,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asteroid.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameplayScene.h" />
+    <ClInclude Include="HighscoreManager.h" />
     <ClInclude Include="HighscoresScene.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="MenuScene.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Spaceship.h" />
+    <ClInclude Include="UIText.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Asteroid.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameplayScene.cpp" />
+    <ClCompile Include="HighscoreManager.cpp" />
     <ClCompile Include="HighscoresScene.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuScene.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Spaceship.cpp" />
+    <ClCompile Include="UIText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\asteroids_spritesheet.png" />

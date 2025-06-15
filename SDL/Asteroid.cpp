@@ -1,47 +1,62 @@
 #include "Asteroid.h"
-#include <SDL_image.h>
-#include <SDL_log.h>
+#include <cmath>
+#include <cstdlib>
 
-Asteroid::Asteroid(SDL_Renderer* renderer, Vector2 spawnPos, Vector2 vel)
-	: GameObject(renderer), velocity(vel)
+static const Vector2Int bigCoords[] = { {156,  0}, {  0, 52}, { 78, 52} };
+static const Vector2Int bigSizes[] = { { 97, 91}, { 73, 71}, { 73, 73} };
+static const Vector2Int medCoords[] = { { 41,  3}, { 82,  2} };
+static const Vector2Int medSizes[] = { { 39, 36}, { 42, 38} };
+static const Vector2Int smallCoords[] = { {128, 1}, {128, 22}, {166, 105} };
+static const Vector2Int smallSizes[] = { {19, 18}, {19, 21}, {21, 18} };
+
+Asteroid::Asteroid(SDL_Renderer* renderer, Vector2 pos, AsteroidSize size)
+    : GameObject(renderer,
+        new Vector2Int(
+            size == BIG ? bigCoords[rand() % 3] :
+            size == MEDIUM ? medCoords[rand() % 2] :
+            smallCoords[rand() % 3]
+        ),
+        new Vector2Int(
+            size == BIG ? bigSizes[rand() % 3] :
+            size == MEDIUM ? medSizes[rand() % 2] :
+            smallSizes[rand() % 3]
+        )
+    ), sizeType(size)
 {
-	position = spawnPos;
-	scale = Vector2(1.f, 1.f);
-	zRotation = 0.f;
-
-	SDL_Surface* surf = IMG_Load("resources/asteroids_spritesheet.png");
-	if (!surf) {
-		SDL_Log("Error loading asteroid sprite: %s", SDL_GetError());
-	}
-	else {
-		texture = SDL_CreateTextureFromSurface(renderer, surf);
-		SDL_FreeSurface(surf);
-	}
+    position = pos;
+    velocity = Vector2(0.0f, 0.0f);
+    scale = Vector2(1.0f, 1.0f);
+    zRotation = 0.0f;
 }
 
 void Asteroid::Update(float dt) {
-	position.x += velocity.x * dt;
-	position.y += velocity.y * dt;
+    position += velocity * dt;
 
-	if (position.x < 0) position.x += 500;
-	else if (position.x > 500) position.x -= 500;
-
-	if (position.y < 0) position.y += 500;
-	else if (position.y > 500) position.y -= 500;
-
-	zRotation += 30.f * dt;
-	if (zRotation >= 360.f) zRotation -= 360.f;
+    if (position.x < 0)   position.x = 500;
+    if (position.x > 500) position.x = 0;
+    if (position.y < 0)   position.y = 500;
+    if (position.y > 500) position.y = 0;
 }
 
-void Asteroid::Render(SDL_Renderer* renderer) {
-	SDL_Rect src{ 0, 0, 64, 64 };
-	SDL_Rect dst{
-		static_cast<int>(position.x - 32), // Centrar el dibujo
-		static_cast<int>(position.y - 32),
-		static_cast<int>(64 * scale.x),
-		static_cast<int>(64 * scale.y)
-	};
-	SDL_Point center = { 32, 32 };
+void Asteroid::SetVelocity(const Vector2& v) {
+    velocity = v;
+}
 
-	SDL_RenderCopyEx(renderer, texture, &src, &dst, zRotation, &center, SDL_FLIP_NONE);
+AsteroidSize Asteroid::GetSize() const {
+    return sizeType;
+}
+
+float Asteroid::GetRadius() const {
+    float baseRadius;
+    switch (sizeType) {
+    case BIG:    baseRadius = 45.0f; break;
+    case MEDIUM: baseRadius = 25.0f; break;
+    case SMALL:  baseRadius = 12.0f; break;
+    }
+    return baseRadius * (scale.x > scale.y ? scale.x : scale.y); //NO TOCAR, funciona
+}
+
+bool Asteroid::CheckCollision(const Vector2& point) const {
+    float dist = (position - point).Magnitude();
+    return dist < GetRadius();
 }

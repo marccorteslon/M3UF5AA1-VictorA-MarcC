@@ -1,35 +1,46 @@
 #include "GameObject.h"
+#include <SDL_image.h>    
+#include <iostream>       
 
-GameObject::GameObject(SDL_Renderer* renderer) {
+GameObject::GameObject(SDL_Renderer* renderer, Vector2Int* _textureCoord, Vector2Int* _size)
+    : texture(nullptr)
+{
+    position = Vector2(0, 0);
+    zRotation = 0.f;
+    scale = Vector2(1.f, 1.f);
 
-	position = Vector2(50, 50);
-	zRotation = 0.f;
-	scale = Vector2(1.f, 1.f);
+    textureCoord = *_textureCoord;
+    size = *_size;
 
-	//LOAD TEXTURE
-	SDL_Surface* surf = IMG_Load("resources/asteroids_spritesheet.png");
-	if (surf == nullptr) {
-		std::cout << "Error al cargar la surface:" << SDL_GetError();
-	}
-
-	texture = SDL_CreateTextureFromSurface(renderer, surf);
-	if (texture == nullptr) {
-		std::cout << "Error al cargar la textura:" << SDL_GetError();
-	}
-
-	SDL_FreeSurface(surf);
-}
-
-void GameObject::Update(float dt) {
-	//zRotation = 10 * dt;
+    SDL_Surface* surf = IMG_Load("resources/asteroids_spritesheet.png");
+    if (!surf) {
+        std::cout << "[ ERROR ] - No es pot carregar la superfície: " << SDL_GetError() << std::endl;
+    }
+    else {
+        texture = SDL_CreateTextureFromSurface(renderer, surf);
+        if (!texture) {
+            std::cout << "[ ERROR ] - No es pot crear la textura: " << SDL_GetError() << std::endl;
+        }
+        SDL_FreeSurface(surf);
+    }
 }
 
 void GameObject::Render(SDL_Renderer* renderer) {
-	SDL_Rect source{ 0,0,		// TEXTURE POSITION
-					30,40 };	//TEXTURE SIZE
-	
-	SDL_Rect destination{ position.x,position.y,		//WINDOW POSITION
-				source.w*scale.x,source.h *scale.y };	//WINDOW SIZE
+    if (!texture) return;
 
-	SDL_RenderCopy(renderer, texture, &source, &destination);
+    SDL_Rect source{
+        textureCoord.x,
+        textureCoord.y,
+        size.x,
+        size.y
+    };
+
+    SDL_Rect dest{
+        static_cast<int>(position.x),
+        static_cast<int>(position.y),
+        static_cast<int>(size.x * scale.x),
+        static_cast<int>(size.y * scale.y)
+    };
+
+    SDL_RenderCopyEx(renderer, texture, &source, &dest, zRotation, nullptr, SDL_FLIP_NONE);
 }

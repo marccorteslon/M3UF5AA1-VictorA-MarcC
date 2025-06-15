@@ -1,10 +1,11 @@
 #pragma once
+
 #include <SDL.h>
 #include <iostream>
 #include <map>
 
 #include "Scene.h"
-#include "MenuScene.h"
+#include "MenuScenes.h"
 #include "HighscoresScene.h"
 #include "GameplayScene.h"
 
@@ -14,7 +15,6 @@ public:
 	SDL_Renderer* renderer;
 
 	GameEngine(int windowWidth, int windowHeight);
-
 	void Update();
 	void Finish();
 
