@@ -59,10 +59,10 @@ void GameEngine::Finish() {
 
 void GameEngine::InitSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << "[ ERROR :) ] " << SDL_GetError() << std::endl;
+        std::cout << "[ Ha habido un error ] " << SDL_GetError() << std::endl;
     }
     if (TTF_Init() < 0) {
-        std::cout << "[ ERROR :) ] " << TTF_GetError() << std::endl;
+        std::cout << "[ Ha habido un error ] " << TTF_GetError() << std::endl;
     }
 }
 
@@ -75,11 +75,11 @@ void GameEngine::InitWindowAndRenderer(int windowWidth, int windowHeight) {
     );
 
     if (!window) {
-        std::cout << "[ ERROR :) ]  " << SDL_GetError() << std::endl;
+        std::cout << "[ Ha habido un error ]  " << SDL_GetError() << std::endl;
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
-        std::cout << "[ ERROR :) ] " << SDL_GetError() << std::endl;
+        std::cout << "[ Ha habido un error ] " << SDL_GetError() << std::endl;
     }
 }
